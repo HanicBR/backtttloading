@@ -583,6 +583,33 @@
     }
     renderVips();
 
+    // ===================
+// MÚSICA DE FUNDO
+// ===================
+(function initMusic(){
+  const audio = document.getElementById("bg-music");
+  if(!audio) return;
+
+  audio.volume = 0.25; // volume 0.0 a 1.0 (ajusta aqui)
+
+  // tenta autoplay
+  const tryPlay = () => {
+    const p = audio.play();
+    if(p && typeof p.catch === "function"){
+      p.catch(()=>{ /* navegador bloqueou autoplay */ });
+    }
+  };
+
+  // No GMod geralmente autoplay funciona de boa
+  if((navigator.userAgent || "").includes("GMod")){
+    tryPlay();
+  } else {
+    // Em browser normal, só toca depois de interação
+    window.addEventListener("click", tryPlay, { once: true });
+    window.addEventListener("keydown", tryPlay, { once: true });
+  }
+})();
+
     /* =========================================================
        PROGRESSO / STATUS
        ========================================================= */
