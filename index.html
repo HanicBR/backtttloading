@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html> 
 <html lang="pt-BR">
 <head>
   <meta charset="utf-8" />
@@ -69,24 +69,24 @@
     }
 
     /* =========================================================
-       BACKGROUND (sempre cobrindo tudo)
+       BACKGROUND (cover total, sem faixa em 16:10)
        ========================================================= */
     .bg-layer {
       position: fixed;
       inset: 0;
-      z-index: 0;          /* <<< não negativo */
+      z-index: 0;
       overflow: hidden;
       pointer-events: none;
-    }
 
-    .bg-layer img{
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      object-position: center;
-      display: block;
+      /* Novo: background direto no layer (mais estável no CEF) */
+      background-color: var(--bg);
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-size: cover;
+
+      /* mantém o zoom que você queria */
       transform: scale(1.35);
-      transform-origin: center;
+      transform-origin: center center;
     }
 
     /* =========================================================
@@ -94,7 +94,7 @@
        ========================================================= */
     .wrap {
       position: relative;
-      z-index: 1;          /* <<< conteúdo acima do bg */
+      z-index: 1;
       width: 100%;
       height: 100vh;
       min-height: 100vh;
@@ -567,15 +567,26 @@
   ];
 
   /* =========================================================
-     BACKGROUND FIXO
+     BACKGROUND FIXO (cover total)
+     - usando background-image direto (mais estável)
      ========================================================= */
   (function initBackground(){
     var layer = document.getElementById("bg-layer");
+    if(!layer) return;
     if(!LOADING_CONFIG.backgroundImages || LOADING_CONFIG.backgroundImages.length === 0) return;
 
-    var img = document.createElement("img");
-    img.src = LOADING_CONFIG.backgroundImages[0];
-    layer.appendChild(img);
+    var url = LOADING_CONFIG.backgroundImages[0];
+
+    // preload pra evitar “faixa” clara enquanto carrega
+    var pre = new Image();
+    pre.onload = function(){
+      layer.style.backgroundImage = 'url("' + url + '")';
+    };
+    pre.onerror = function(){
+      // fallback simples se der erro
+      layer.style.backgroundImage = 'url("' + url + '")';
+    };
+    pre.src = url;
   })();
 
   /* =========================================================
@@ -714,7 +725,7 @@
       var scaleW = w / 1920;
       var scaleH = h / 1080;
       var s = Math.min(scaleW, scaleH);
-      s = Math.max(0.85, Math.min(1.18, s));  // <<< permite downscale
+      s = Math.max(0.85, Math.min(1.18, s));
       document.documentElement.style.setProperty("--ui-scale", s.toFixed(3));
     }
     apply();
