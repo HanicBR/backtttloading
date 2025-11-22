@@ -456,7 +456,8 @@
   </audio>
 
   <!-- background fixo -->
-  <div class="bg-layer" id="bg-layer"></div>
+  <div class="bg-layer" id="bg-layer"
+     style="background-image:url('https://i.imgur.com/HnZfcKR.jpeg')"></div>
 
   <div class="wrap" id="wrap">
     <div class="container">
@@ -571,23 +572,19 @@
      - usando background-image direto (mais estável)
      ========================================================= */
   (function initBackground(){
-    var layer = document.getElementById("bg-layer");
-    if(!layer) return;
-    if(!LOADING_CONFIG.backgroundImages || LOADING_CONFIG.backgroundImages.length === 0) return;
+  var layer = document.getElementById("bg-layer");
+  if(!layer) return;
+  if(!LOADING_CONFIG.backgroundImages || LOADING_CONFIG.backgroundImages.length === 0) return;
 
-    var url = LOADING_CONFIG.backgroundImages[0];
+  var url = LOADING_CONFIG.backgroundImages[0];
 
-    // preload pra evitar “faixa” clara enquanto carrega
-    var pre = new Image();
-    pre.onload = function(){
-      layer.style.backgroundImage = 'url("' + url + '")';
-    };
-    pre.onerror = function(){
-      // fallback simples se der erro
-      layer.style.backgroundImage = 'url("' + url + '")';
-    };
-    pre.src = url;
-  })();
+  // >>> SETA IMEDIATO (garante no CEF)
+  layer.style.backgroundImage = "url('" + url + "')";
+
+  // preload opcional só pra evitar flash quando trocar depois
+  var pre = new Image();
+  pre.src = url;
+})();
 
   /* =========================================================
      VIP RENDER
