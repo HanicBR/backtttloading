@@ -77,14 +77,13 @@
       z-index: 0;
       overflow: hidden;
       pointer-events: none;
-
-      /* Novo: background direto no layer (mais estável no CEF) */
+    
       background-color: var(--bg);
+      background-image: url("assets/bg.jpg"); /* <<< AQUI */
       background-position: center center;
       background-repeat: no-repeat;
       background-size: cover;
-
-      /* mantém o zoom que você queria */
+    
       transform: scale(1.35);
       transform-origin: center center;
     }
@@ -456,8 +455,7 @@
   </audio>
 
   <!-- background fixo -->
-  <div class="bg-layer" id="bg-layer"
-     style="background-image:url('https://i.imgur.com/HnZfcKR.jpeg')"></div>
+  <div class="bg-layer" id="bg-layer"></div>
 
   <div class="wrap" id="wrap">
     <div class="container">
@@ -554,7 +552,7 @@
     fallbackServerName: "Backstabber Brasil",
     subtitleWhenIdle: "Conectando ao servidor...",
     backgroundImages: [
-      "https://i.imgur.com/HnZfcKR.jpeg"
+      "assets/bg.jpg"
     ],
     backgroundChangeSeconds: 12
   };
@@ -566,25 +564,6 @@
       avatar: "https://i.imgur.com/qrtE4cN.gif"
     }
   ];
-
-  /* =========================================================
-     BACKGROUND FIXO (cover total)
-     - usando background-image direto (mais estável)
-     ========================================================= */
-  (function initBackground(){
-  var layer = document.getElementById("bg-layer");
-  if(!layer) return;
-  if(!LOADING_CONFIG.backgroundImages || LOADING_CONFIG.backgroundImages.length === 0) return;
-
-  var url = LOADING_CONFIG.backgroundImages[0];
-
-  // >>> SETA IMEDIATO (garante no CEF)
-  layer.style.backgroundImage = "url('" + url + "')";
-
-  // preload opcional só pra evitar flash quando trocar depois
-  var pre = new Image();
-  pre.src = url;
-})();
 
   /* =========================================================
      VIP RENDER
