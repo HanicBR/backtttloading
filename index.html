@@ -537,208 +537,210 @@
   </div>
 
   <script>
-    /* =========================================================
-       CONFIG
-       ========================================================= */
-    const LOADING_CONFIG = {
-      fallbackServerName: "Backstabber Brasil",
-      subtitleWhenIdle: "Conectando ao servidor...",
-      backgroundImages: [
-        "https://i.imgur.com/HnZfcKR.jpeg"
-      ],
-      backgroundChangeSeconds: 12
-    };
-
-    // 4 VIPs (2 reais + 2 novos pra você preencher certinho)
-    const VIPS = [
-      {
-        steamId: "",
-        name: "✪ Sushi",
-        avatar: "https://i.imgur.com/qrtE4cN.gif"
-      }
-    ];
-
-    /* =========================================================
-       BACKGROUND FIXO
-       ========================================================= */
-    (function initBackground(){
-      const layer = document.getElementById("bg-layer");
-      if(!LOADING_CONFIG.backgroundImages?.length) return;
-
-      const img = document.createElement("img");
-      img.src = LOADING_CONFIG.backgroundImages[0];
-      layer.appendChild(img);
-    })();
-
-    /* =========================================================
-       VIP RENDER
-       ========================================================= */
-    function renderVips(){
-      const list = document.getElementById("vip-list");
-      if(!list) return;
-      list.innerHTML = "";
-
-      VIPS.forEach(v=>{
-        const card = document.createElement("div");
-        card.className = "vip-card";
-        card.innerHTML = `
-          <img class="vip-avatar" src="${v.avatar}" alt="${v.name}">
-          <div>
-            <div class="vip-name rainbow-text">${v.name}</div>
-            <div class="vip-id">${v.steamId}</div>
-          </div>
-        `;
-        list.appendChild(card);
-      });
-    }
-    renderVips();
-
-    // ===================
-// MÚSICA DE FUNDO
-// ===================
-(function initMusic(){
-  const audio = document.getElementById("bg-music");
-  if(!audio) return;
-
-  audio.volume = 0.25; // volume 0.0 a 1.0 (ajusta aqui)
-
-  // tenta autoplay
-  const tryPlay = () => {
-    const p = audio.play();
-    if(p && typeof p.catch === "function"){
-      p.catch(()=>{ /* navegador bloqueou autoplay */ });
-    }
+  /* =========================================================
+     CONFIG
+     ========================================================= */
+  var LOADING_CONFIG = {
+    fallbackServerName: "Backstabber Brasil",
+    subtitleWhenIdle: "Conectando ao servidor...",
+    backgroundImages: [
+      "https://i.imgur.com/HnZfcKR.jpeg"
+    ],
+    backgroundChangeSeconds: 12
   };
 
-  // No GMod geralmente autoplay funciona de boa
-  if((navigator.userAgent || "").includes("GMod")){
-    tryPlay();
-  } else {
-    // Em browser normal, só toca depois de interação
-    window.addEventListener("click", tryPlay, { once: true });
-    window.addEventListener("keydown", tryPlay, { once: true });
+  var VIPS = [
+    {
+      steamId: "",
+      name: "✪ Sushi",
+      avatar: "https://i.imgur.com/qrtE4cN.gif"
+    }
+  ];
+
+  /* =========================================================
+     BACKGROUND FIXO
+     ========================================================= */
+  (function initBackground(){
+    var layer = document.getElementById("bg-layer");
+    if(!LOADING_CONFIG.backgroundImages || LOADING_CONFIG.backgroundImages.length === 0) return;
+
+    var img = document.createElement("img");
+    img.src = LOADING_CONFIG.backgroundImages[0];
+    layer.appendChild(img);
+  })();
+
+  /* =========================================================
+     VIP RENDER
+     ========================================================= */
+  function renderVips(){
+    var list = document.getElementById("vip-list");
+    if(!list) return;
+    list.innerHTML = "";
+
+    for(var i=0; i<VIPS.length; i++){
+      var v = VIPS[i];
+      var card = document.createElement("div");
+      card.className = "vip-card";
+      card.innerHTML =
+        '<img class="vip-avatar" src="'+v.avatar+'" alt="'+v.name+'">' +
+        '<div>' +
+          '<div class="vip-name rainbow-text">'+v.name+'</div>' +
+          '<div class="vip-id">'+(v.steamId||"")+'</div>' +
+        '</div>';
+      list.appendChild(card);
+    }
   }
-})();
+  renderVips();
 
-    /* =========================================================
-       PROGRESSO / STATUS
-       ========================================================= */
-    let currentProgress = 0;
-    let mountingAddons = false;
+  /* =========================================================
+     MÚSICA DE FUNDO
+     ========================================================= */
+  (function initMusic(){
+    var audio = document.getElementById("bg-music");
+    if(!audio) return;
 
-    function setProgress(target){
-      target = Math.max(0, Math.min(100, target));
-      if(target < currentProgress) target = currentProgress;
-      currentProgress = target;
+    audio.volume = 0.25;
 
-      document.getElementById("progress-bar").style.width = target + "%";
-      document.getElementById("progress-percent").textContent = Math.round(target) + "%";
-
-      if(target >= 99){
-        document.getElementById("server-sub").textContent = "Pronto para entrar!";
-      }
-    }
-
-    /* =========================================================
-       HOOKS DO GMOD
-       ========================================================= */
-    function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemode){
-      document.getElementById("server-name").textContent =
-        servername || LOADING_CONFIG.fallbackServerName;
-
-      document.getElementById("server-sub").textContent =
-        LOADING_CONFIG.subtitleWhenIdle;
-
-      document.getElementById("info-map").textContent =
-        "mapa: " + (mapname || "–");
-
-      document.getElementById("info-gamemode").textContent =
-        "modo: " + (gamemode || "–");
-
-      document.getElementById("info-players").textContent =
-        "players: 0/" + (maxplayers || "–");
-    }
-
-    function SetStatusChanged(status){
-      document.getElementById("status-text").textContent = status || "";
-
-      if(status && status.includes("/")){
-        const match = status.match(/(\d+)\s*\/\s*(\d+)/);
-        if(match){
-          const cur = parseInt(match[1],10) || 0;
-          const tot = parseInt(match[2],10) || 1;
-          const base = mountingAddons ? 40 : 10;
-          const pct = base + (cur/tot)*60;
-          setProgress(pct);
+    function tryPlay(){
+      try {
+        var p = audio.play();
+        if(p && typeof p.catch === "function"){
+          p.catch(function(){});
         }
-      }
+      } catch(e){}
+    }
 
-      if(status === "Mounting Addons" || status === "Workshop Complete"){
-        mountingAddons = true;
-        setProgress(80);
-      }
-      if(status === "Client info sent!" || status === "Client info sent"){
-        setProgress(92);
-      }
-      if(status === "Starting Lua..."){
-        setProgress(100);
+    var ua = navigator.userAgent || "";
+    if(ua.indexOf("GMod") !== -1){
+      tryPlay();
+    } else {
+      window.addEventListener("click", tryPlay, { once:true });
+      window.addEventListener("keydown", tryPlay, { once:true });
+    }
+  })();
+
+  /* =========================================================
+     PROGRESSO / STATUS
+     ========================================================= */
+  var currentProgress = 0;
+  var mountingAddons = false;
+
+  function setProgress(target){
+    if(target < 0) target = 0;
+    if(target > 100) target = 100;
+    if(target < currentProgress) target = currentProgress;
+    currentProgress = target;
+
+    document.getElementById("progress-bar").style.width = target + "%";
+    document.getElementById("progress-percent").textContent = Math.round(target) + "%";
+
+    if(target >= 99){
+      document.getElementById("server-sub").textContent = "Pronto para entrar!";
+    }
+  }
+
+  /* =========================================================
+     HOOKS DO GMOD
+     ========================================================= */
+  function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemode){
+    document.getElementById("server-name").textContent =
+      servername || LOADING_CONFIG.fallbackServerName;
+
+    document.getElementById("server-sub").textContent =
+      LOADING_CONFIG.subtitleWhenIdle;
+
+    document.getElementById("info-map").textContent =
+      "mapa: " + (mapname || "–");
+
+    document.getElementById("info-gamemode").textContent =
+      "modo: " + (gamemode || "–");
+
+    document.getElementById("info-players").textContent =
+      "players: 0/" + (maxplayers || "–");
+  }
+
+  function SetStatusChanged(status){
+    document.getElementById("status-text").textContent = status || "";
+
+    if(status && status.indexOf("/") !== -1){
+      var match = status.match(/(\d+)\s*\/\s*(\d+)/);
+      if(match){
+        var cur = parseInt(match[1],10) || 0;
+        var tot = parseInt(match[2],10) || 1;
+        var base = mountingAddons ? 40 : 10;
+        var pct = base + (cur/tot)*60;
+        setProgress(pct);
       }
     }
 
-    function DownloadingFile(fileName){
-      document.getElementById("file-text").textContent =
-        fileName ? "Baixando: " + fileName : "";
+    if(status === "Mounting Addons" || status === "Workshop Complete"){
+      mountingAddons = true;
+      setProgress(80);
     }
+    if(status === "Client info sent!" || status === "Client info sent"){
+      setProgress(92);
+    }
+    if(status === "Starting Lua..."){
+      setProgress(100);
+    }
+  }
 
-    window.GameDetails = GameDetails;
-    window.SetStatusChanged = SetStatusChanged;
-    window.DownloadingFile = DownloadingFile;
+  function DownloadingFile(fileName){
+    document.getElementById("file-text").textContent =
+      fileName ? "Baixando: " + fileName : "";
+  }
 
-    /* =========================================================
-       AUTO SCALE (1920x1080 baseline)
-       ========================================================= */
-    (function autoScale(){
-      function apply(){
-        const w = window.innerWidth;
-        const h = window.innerHeight;
-        const scaleW = w / 1920;
-        const scaleH = h / 1080;
-        let s = Math.min(scaleW, scaleH);
-        s = Math.max(0.92, Math.min(1.18, s));
-        document.documentElement.style.setProperty("--ui-scale", s.toFixed(3));
-      }
-      apply();
-      window.addEventListener("resize", apply);
-    })();
+  window.GameDetails = GameDetails;
+  window.SetStatusChanged = SetStatusChanged;
+  window.DownloadingFile = DownloadingFile;
 
-    /* =========================================================
-       PREVIEW FORA DO GMOD
-       ========================================================= */
-    (function preview(){
-      const ua = navigator.userAgent || "";
-      if(ua.includes("GMod")) return;
+  /* =========================================================
+     AUTO SCALE (1920x1080 baseline)
+     ========================================================= */
+  (function autoScale(){
+    function apply(){
+      var w = window.innerWidth;
+      var h = window.innerHeight;
+      var scaleW = w / 1920;
+      var scaleH = h / 1080;
+      var s = Math.min(scaleW, scaleH);
+      s = Math.max(0.92, Math.min(1.18, s));
+      document.documentElement.style.setProperty("--ui-scale", s.toFixed(3));
+    }
+    apply();
+    window.addEventListener("resize", apply);
+  })();
 
-      GameDetails(
-        LOADING_CONFIG.fallbackServerName,
-        "", "ttt_minecraft_b5", 24, "", "Trouble in Terrorist Town"
-      );
+  /* =========================================================
+     PREVIEW FORA DO GMOD
+     ========================================================= */
+  (function preview(){
+    var ua = navigator.userAgent || "";
+    if(ua.indexOf("GMod") !== -1) return;
 
-      const steps = [
-        "Conectando ao servidor...",
-        "Autenticando...",
-        "3/20","7/20","14/20","20/20",
-        "Workshop Complete",
-        "Client info sent!",
-        "Starting Lua..."
-      ];
-      let i=0;
-      const tick=()=>{
-        if(i>=steps.length) return;
-        SetStatusChanged(steps[i++]);
-        setTimeout(tick, 900);
-      };
-      setTimeout(tick, 800);
-    })();
-  </script>
+    GameDetails(
+      LOADING_CONFIG.fallbackServerName,
+      "", "ttt_minecraft_b5", 24, "", "Trouble in Terrorist Town"
+    );
+
+    var steps = [
+      "Conectando ao servidor...",
+      "Autenticando...",
+      "3/20","7/20","14/20","20/20",
+      "Workshop Complete",
+      "Client info sent!",
+      "Starting Lua..."
+    ];
+
+    var i=0;
+    function tick(){
+      if(i>=steps.length) return;
+      SetStatusChanged(steps[i++]);
+      setTimeout(tick, 900);
+    }
+    setTimeout(tick, 800);
+  })();
+</script>
+
 </body>
 </html>
