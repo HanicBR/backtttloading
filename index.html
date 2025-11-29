@@ -1,4 +1,3 @@
-
 <!DOCTYPE html> 
 <html lang="pt-BR">
 <head>
@@ -122,24 +121,36 @@ body {
   min-height: 0;
 }
 
-/* TOP GRID COM VIP CENTRAL EMBAIXO DO CLUBE VIP */
+/* TOP GRID: 3 cards em cima, VIP embaixo crescendo por colunas */
 .top-grid {
   display:grid;
   grid-template-columns: 1.25fr 1fr 1fr;
-  grid-template-areas:
-    "ttt vipclub rules"
-    ".   vips    .";
+  grid-auto-rows: auto;
   gap: clamp(10px, 1.4vw, 18px);
   align-items: stretch;
 }
 
-.card-ttt { grid-area: ttt; }
-.card-vipclub { grid-area: vipclub; }
-.card-rules { grid-area: rules; }
+/* primeira linha */
+.card-ttt {
+  grid-column: 1;
+  grid-row: 1;
+}
+.card-vipclub {
+  grid-column: 2;
+  grid-row: 1;
+}
+.card-rules {
+  grid-column: 3;
+  grid-row: 1;
+}
+
+/* VIP na segunda linha – largura controlada via JS (grid-column) */
 .card-vips {
-  grid-area: vips;
-  justify-self: center;
-  width: min(520px, 100%);
+  grid-row: 2;
+  grid-column: 2 / span 1; /* padrão: só coluna do meio (4 VIPs) */
+  justify-self: stretch;
+  width: 100%;
+  max-width: 100%;
 }
 
 .glass-card{
@@ -272,10 +283,16 @@ body {
   text-transform:uppercase;
   color:#111827;
 }
+
+/* VIPs em colunas com no máximo 4 por coluna */
 .vip-list{
-  display:flex; flex-direction:column; gap:8px;
-  overflow:auto;
+  display:grid;
+  grid-template-rows: repeat(4, auto); /* até 4 VIPs por coluna */
+  grid-auto-flow: column;              /* preenche a coluna primeiro, depois abre outra */
+  row-gap: 8px;
+  column-gap: 8px;
   padding-right: 4px;
+  overflow:auto;
 }
 
 .vip-card{
@@ -453,74 +470,130 @@ body {
 
 /* =========================================================
    RESPONSIVIDADE POR LARGURA
+   (mantendo o grid geral)
    ========================================================= */
 
-/* >>> 1280px (ex: 1280x720 / 1280x800) -> 2 colunas compactas */
+/* 1280px: compacta um pouco */
 @media (max-width: 1280px){
   .container{
     max-width: 1200px;
     margin-top: 3%;
   }
-  .top-grid{
-    grid-template-columns: 1fr 1fr;
-    grid-template-areas:
-      "ttt ttt"
-      "vipclub rules"
-      "vips vips";
-    gap: clamp(8px, 1.2vw, 14px);
+
+  .wrap{
+    padding: 10px var(--pad-x);
   }
-  .card-vips{ width: min(600px, 100%); }
+
+  .glass-card,
+  .vip-box,
+  .loading-bar{
+    border-radius: 22px;
+    padding: 10px 14px;
+  }
+
+  .rules-list{
+    font-size: var(--fs-md);
+  }
 }
 
-/* >>> 1024px (ex: 1024x768) -> 2 colunas mais enxutas */
+/* 1024px: fontes menores e alturas reduzidas */
 @media (max-width: 1024px){
-  .container{ margin-top: 2%; }
+  :root{
+    --fs-xs: 10px;
+    --fs-sm: 11px;
+    --fs-md: 12px;
+    --fs-lg: 13px;
+    --fs-xl: 18px;
+    --fs-2xl: 22px;
+  }
+
+  .container{
+    max-width: 1150px;
+    margin-top: 1%;
+  }
+
   .glass-card{
-    min-height: clamp(130px, 22vh, 200px);
-    padding: clamp(10px, 1.2vw, 14px);
+    min-height: 130px;
   }
+
   .vip-box{
-    min-height: clamp(150px, 24vh, 220px);
-    padding: clamp(9px, 1vw, 12px);
+    min-height: 140px;
   }
-  .rules-list{ font-size: var(--fs-md); }
-  .loading-bar{ padding: 10px 12px; }
+
+  .server-name{
+    letter-spacing: 0.14em;
+  }
 }
 
-/* >>> 820px (tablet/cef pequeno) -> 1 coluna */
+/* 820px: ainda mesmo grid, tudo mais miudinho */
 @media (max-width: 820px){
-  .container{ margin-top: 0; }
-  .top-grid{
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "ttt"
-      "vipclub"
-      "vips"
-      "rules";
+  .container{
+    max-width: 1100px;
+    margin-top: 0;
   }
-  .card-vips{ width: 100%; }
-  .glass-card{ min-height: clamp(120px, 26vh, 190px); }
+
+  .wrap{
+    padding: 8px 10px;
+    gap: 8px;
+  }
+
+  .glass-card,
+  .vip-box{
+    padding: 8px 10px;
+    gap: 6px;
+  }
+
+  .rules-list{
+    gap: 4px;
+  }
+
+  .vip-avatar{
+    width: 32px;
+    height: 32px;
+  }
 }
 
-/* >>> 640px (bem pequeno) -> tudo compacto */
+/* 640px: versão bem compacta */
 @media (max-width: 640px){
   :root{
-    --fs-lg: clamp(14px, 2.2vw, 16px);
-    --fs-xl: clamp(16px, 3vw, 20px);
-    --fs-2xl: clamp(18px, 4vw, 24px);
+    --fs-xs: 9px;
+    --fs-sm: 10px;
+    --fs-md: 11px;
+    --fs-lg: 12px;
+    --fs-xl: 16px;
+    --fs-2xl: 18px;
   }
-  .wrap{ padding: 8px; gap: 8px; }
-  .glass-card, .vip-box{
-    padding: 8px 10px;
-    border-radius: 20px;
+
+  .container{
+    max-width: 900px;
   }
-  .loading-bottom{ gap: 6px; }
-  .file{ max-width: 85vw; }
+
+  .wrap{
+    padding: 6px 8px;
+    gap: 6px;
+  }
+
+  .glass-card,
+  .vip-box{
+    padding: 8px 9px;
+    border-radius: 18px;
+  }
+
+  .loading-bottom{
+    gap: 4px;
+  }
+
+  .file{
+    max-width: 85vw;
+  }
+
+  .ttt-subtitle{
+    font-size: var(--fs-xs);
+  }
 }
 
 /* =========================================================
    RESPONSIVIDADE POR ALTURA
-   (resolve 800x600, 1024x600, 1280x600, etc.)
    ========================================================= */
 
 /* >>> <=800px de altura -> libera scroll e reduz espaços */
@@ -580,21 +653,14 @@ body {
   .rule-num{ min-width: 30px; min-height: 30px; font-size: clamp(14px, 3vw, 18px); }
 }
 
-/* >>> <=520px de altura (stress) -> 1 coluna obrigatória e texto mínimo */
+/* >>> <=520px de altura (stress) */
 @media (max-height: 520px){
-  .top-grid{
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "ttt"
-      "vipclub"
-      "rules"
-      "vips";
-  }
   .card-vips{ width: 100%; }
 
   .glass-card, .vip-box{
     min-height: auto;
     gap: 6px;
+    padding: 8px 10px;
   }
 
   .ttt-subtitle{ display:none; }
@@ -612,8 +678,8 @@ body {
 
   <!-- background fixo -->
   <div class="bg-layer" id="bg-layer">
-  <img id="bg-img" alt="">
-</div>
+    <img id="bg-img" alt="">
+  </div>
 
   <div class="wrap" id="wrap">
     <div class="container">
@@ -672,42 +738,40 @@ body {
       <!-- espaço do meio -->
       <div style="min-height:0;"></div>
 
-      <!-- BOTTOM loading -->
       <!-- BOTTOM loading + créditos separados -->
-<div class="bottom-area">
+      <div class="bottom-area">
 
-  <div class="loading-bar">
-    <div class="loading-top">
-      <div>
-        <div class="server-name" id="server-name">BACKSTABBER BRASIL</div>
-        <div class="server-sub" id="server-sub">Conectando ao servidor...</div>
+        <div class="loading-bar">
+          <div class="loading-top">
+            <div>
+              <div class="server-name" id="server-name">BACKSTABBER BRASIL</div>
+              <div class="server-sub" id="server-sub">Conectando ao servidor...</div>
+            </div>
+            <div class="percent" id="progress-percent">0%</div>
+          </div>
+
+          <div class="progress-bg">
+            <div class="progress-fill" id="progress-bar"></div>
+          </div>
+
+          <div class="loading-bottom">
+            <div>
+              <div class="status" id="status-text">Aguardando resposta do jogo...</div>
+              <div class="file" id="file-text"></div>
+            </div>
+            <div class="mini-info">
+              <div id="info-map">mapa: –</div>
+              <div id="info-gamemode">modo: –</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- cardzinho separado -->
+        <div class="credits-card">
+          Feito por: <b>Sushi</b> e <b>Hanic</b>
+        </div>
+
       </div>
-      <div class="percent" id="progress-percent">0%</div>
-    </div>
-
-    <div class="progress-bg">
-      <div class="progress-fill" id="progress-bar"></div>
-    </div>
-
-    <div class="loading-bottom">
-      <div>
-        <div class="status" id="status-text">Aguardando resposta do jogo...</div>
-        <div class="file" id="file-text"></div>
-      </div>
-      <div class="mini-info">
-        <div id="info-map">mapa: –</div>
-        <div id="info-gamemode">modo: –</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- cardzinho separado -->
-  <div class="credits-card">
-    Feito por: <b>Sushi</b> e <b>Hanic</b>
-  </div>
-
-</div>
-
 
     </div>
   </div>
@@ -730,36 +794,53 @@ body {
       steamId: "",
       name: "PigBoyBR",
       avatar: "https://avatars.fastly.steamstatic.com/0986a5f8126b652b332c3f950fcd5f50ce21b410_full.jpg"
+    },
+{
+      steamId: "",
+      name: "Mr.B-O-M-B-A-S-T-I-C",
+      avatar: "https://shared.akamai.steamstatic.com/community_assets/images/items/2181720/097978e42477d98190ed9e14e971c2b9976fc8d1.gif"
+    },
+{
+      steamId: "",
+      name: "Gatogames435",
+      avatar: "https://shared.akamai.steamstatic.com/community_assets/images/items/2459330/11bbadea5154c316c883df0f3f1944395b3715b8.gif"
+    },
+{
+      steamId: "",
+      name: "Índio Véio",
+      avatar: "https://avatars.akamai.steamstatic.com/bf0675b97b1d51792473515563a54b795bd7e0b2_full.jpg"
     }
+
+    // adicione mais VIPs aqui
   ];
 
   /* =========================================================
      BACKGROUND FIXO (cover total)
-     - usando background-image direto (mais estável)
      ========================================================= */
   (function initBackground(){
-  var layer = document.getElementById("bg-layer");
-  if(!layer) return;
-  if(!LOADING_CONFIG.backgroundImages || LOADING_CONFIG.backgroundImages.length === 0) return;
+    var layer = document.getElementById("bg-layer");
+    if(!layer) return;
+    if(!LOADING_CONFIG.backgroundImages || LOADING_CONFIG.backgroundImages.length === 0) return;
 
-  var url = LOADING_CONFIG.backgroundImages[0];
+    var url = LOADING_CONFIG.backgroundImages[0];
 
-  // >>> SETA IMEDIATO (garante no CEF)
-  layer.style.backgroundImage = "url('" + url + "')";
+    // >>> SETA IMEDIATO (garante no CEF)
+    layer.style.backgroundImage = "url('" + url + "')";
 
-  // preload opcional só pra evitar flash quando trocar depois
-  var pre = new Image();
-  pre.src = url;
-})();
+    // preload opcional só pra evitar flash quando trocar depois
+    var pre = new Image();
+    pre.src = url;
+  })();
 
   /* =========================================================
-     VIP RENDER
+     VIP RENDER + AJUSTE DE LARGURA DO CARD
      ========================================================= */
   function renderVips(){
     var list = document.getElementById("vip-list");
     if(!list) return;
     list.innerHTML = "";
 
+    // monta os cards
     for(var i=0; i<VIPS.length; i++){
       var v = VIPS[i];
       var card = document.createElement("div");
@@ -771,6 +852,31 @@ body {
           '<div class="vip-id">'+(v.steamId||"")+'</div>' +
         '</div>';
       list.appendChild(card);
+    }
+
+    // ajusta o tamanho / posição do card de VIP conforme quantidade
+    var box = document.querySelector(".card-vips");
+    if(box){
+      var count = VIPS.length;
+      var cols = Math.ceil(count / 4) || 1;  // 4 por coluna
+
+      if(cols <= 1){
+        // até 4 VIPs -> ocupa só a coluna do meio (mesma largura dos outros)
+        box.style.gridColumn = "2 / span 1";
+        box.style.maxWidth  = "100%";
+        box.style.margin    = "0";
+      } else if(cols === 2){
+        // 5–8 VIPs -> visualmente 2 colunas, mas CENTRALIZADO
+        // ocupa a linha inteira no grid e limita a largura a ~2/3
+        box.style.gridColumn = "1 / span 3";
+        box.style.maxWidth   = "66.666%";
+        box.style.margin     = "0 auto";
+      } else {
+        // 9+ VIPs -> ocupa as 3 colunas (triplo, linha toda)
+        box.style.gridColumn = "1 / span 3";
+        box.style.maxWidth   = "100%";
+        box.style.margin     = "0";
+      }
     }
   }
   renderVips();
@@ -876,8 +982,7 @@ body {
   window.DownloadingFile = DownloadingFile;
 
   /* =========================================================
-     AUTO SCALE (1920x1080 baseline)
-     - deixa reduzir em telas menores
+     AUTO SCALE
      ========================================================= */
   (function autoScale(){
     function apply(){
@@ -886,7 +991,7 @@ body {
       var scaleW = w / 1920;
       var scaleH = h / 1080;
       var s = Math.min(scaleW, scaleH);
-      s = Math.max(0.85, Math.min(1.18, s));
+      s = Math.max(0.7, Math.min(1.18, s));
       document.documentElement.style.setProperty("--ui-scale", s.toFixed(3));
     }
     apply();
@@ -922,25 +1027,23 @@ body {
     }
     setTimeout(tick, 800);
   })();
-(function initBackground(){
-  var imgEl = document.getElementById("bg-img");
-  if(!imgEl) return;
 
-  // coloca URL absoluta aqui (isso evita bug de relativo no CEF)
-  var ABS_BG = "https://hanicbr.github.io/backtttloading/assets/bg.png";
+  (function initBackgroundImg(){
+    var imgEl = document.getElementById("bg-img");
+    if(!imgEl) return;
 
-  // preload + cache-bust
-  var pre = new Image();
-  pre.onload = function(){
-    imgEl.src = ABS_BG;
-  };
-  pre.onerror = function(){
-    // fallback simples: tenta uma segunda URL se quiser
-    // imgEl.src = "https://outro-host/bg.jpg";
-  };
+    var ABS_BG = "https://hanicbr.github.io/backtttloading/assets/bg.png";
 
-  pre.src = ABS_BG + (ABS_BG.indexOf("?") === -1 ? "?" : "&") + "v=" + Date.now();
-})();
+    var pre = new Image();
+    pre.onload = function(){
+      imgEl.src = ABS_BG;
+    };
+    pre.onerror = function(){
+      // fallback opcional
+    };
+
+    pre.src = ABS_BG + (ABS_BG.indexOf("?") === -1 ? "?" : "&") + "v=" + Date.now();
+  })();
   </script>
 </body>
 </html>
