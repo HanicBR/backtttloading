@@ -225,25 +225,117 @@ body {
 .dot-blue{ background:#3b82f6; }
 
 /* =========================================================
-   VIP CLUB CARD
+   MAPA / CRASH FIX CARD (substitui o antigo "Clube VIP")
+   - Menos transparente APENAS este card
+   - Título + aviso MAIS DESTACADOS
    ========================================================= */
-.vip-club-card{
+.maps-fix-card{
   justify-content:center;
-  text-align:center;
+  text-align:left;
+
+  /* menos transparente só aqui */
   background:
-    radial-gradient(circle at top, var(--red-soft), transparent 65%),
-    var(--glass);
+    radial-gradient(circle at top, rgba(190,27,60,0.20), transparent 60%),
+    rgba(255,255,255,0.86);
+  border: 1px solid rgba(190,27,60,0.28);
+
+  box-shadow:
+    0 12px 34px rgba(0,0,0,0.10),
+    inset 0 1px 0 rgba(255,255,255,0.65);
 }
-.vip-club-title{
-  font-weight:900;
-  font-size: var(--fs-xl);
-  letter-spacing:0.12em; text-transform:uppercase;
-  margin-bottom: 4px;
+
+.maps-fix-topline{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 10px;
 }
-.vip-club-text{
-  font-size: var(--fs-lg);
-  color:#111827; line-height:1.38;
-  padding: 0 8px;
+
+/* AVISO maior e mais "chamativo" */
+.maps-fix-pill{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(190,27,60,0.92);
+  color:#fff;
+  font-weight: 900;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  font-size: clamp(12px, 1.1vw, 14px);
+  box-shadow:
+    0 14px 28px rgba(190,27,60,0.24),
+    0 0 0 3px rgba(190,27,60,0.12);
+}
+
+/* Título maior e com destaque */
+.maps-fix-title{
+  font-weight: 900;
+  font-size: clamp(18px, 1.9vw, 26px);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color:#111827;
+  text-shadow: 0 2px 0 rgba(255,255,255,0.6);
+}
+
+.maps-fix-grid{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.maps-fix-text{
+  font-size: var(--fs-md);
+  color:#111827;
+  line-height: 1.35;
+}
+
+.maps-fix-linkbig{
+  margin-top: 10px;
+  display:block;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 16px;
+  background: rgba(190,27,60,0.10);
+  border: 1px solid rgba(190,27,60,0.22);
+  font-weight: 900;
+  font-size: clamp(16px, 1.6vw, 20px);
+  letter-spacing: 0.02em;
+  color: rgba(190,27,60,0.98);
+  text-decoration: none;
+  text-align:center;
+  user-select: all;
+}
+
+.maps-fix-linkbig:hover{
+  filter: brightness(1.03);
+  background: rgba(190,27,60,0.12);
+}
+
+.maps-fix-hint{
+  margin-top: 6px;
+  font-size: var(--fs-xs);
+  color: var(--muted);
+  text-align:center;
+}
+
+.maps-fix-qrwrap{
+  flex-shrink: 0;
+  width: clamp(70px, 7vw, 96px);
+  height: clamp(70px, 7vw, 96px);
+  border-radius: 16px;
+  overflow:hidden;
+  border: 2px solid rgba(190,27,60,0.35);
+  background: rgba(255,255,255,0.90);
+  box-shadow: 0 12px 26px rgba(0,0,0,0.10);
+}
+.maps-fix-qrwrap img{
+  width:100%;
+  height:100%;
+  object-fit: cover;
 }
 
 /* =========================================================
@@ -704,11 +796,30 @@ body {
           </div>
         </div>
 
-        <!-- Clube VIP -->
-        <div class="glass-card vip-club-card card-vipclub">
-          <div class="vip-club-title">Clube VIP</div>
-          <div class="card-scroll vip-club-text">
-            VIPs têm o privilégio exclusivo de ter o nome estampado na nossa tela de Loading.
+        <!-- AVISO: MAPAS / CRASH FIX -->
+        <div class="glass-card maps-fix-card card-vipclub">
+          <div class="maps-fix-topline">
+            <span class="maps-fix-pill">AVISO</span>
+            <div class="maps-fix-title">Travou / crashou ao entrar?</div>
+          </div>
+
+          <div class="maps-fix-grid">
+            <div style="flex:1; min-width:0;">
+              <div class="maps-fix-text">
+                Está faltando mapas em seu jogo. Acesse o link e <b>Inscreva-se na coleção de mapas</b>. Depois, entre novamente.
+              </div>
+
+              <a class="maps-fix-linkbig" href="https://bit.ly/mapasback" target="_blank" rel="noreferrer">
+                bit.ly/mapasback
+              </a>
+              <div class="maps-fix-hint">
+                Abra o link e clique em <b>“Inscrever-se em todos”</b>.
+              </div>
+            </div>
+
+            <div class="maps-fix-qrwrap" title="Aponte a câmera do celular">
+              <img src="https://i.imgur.com/5873D1j.jpeg" alt="QR Code - Mapas do Backstabber Brasil">
+            </div>
           </div>
         </div>
 
